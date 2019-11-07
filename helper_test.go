@@ -8,6 +8,7 @@ package gosnmp
 
 import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,7 +48,8 @@ type testsMarshalUint32T struct {
 
 var testsMarshalUint32 = []testsMarshalUint32T{
 	{0, []byte{0x00}},
-	{2, []byte{0x02}},  // 2
+	{2, []byte{0x02}}, // 2
+	{128, []byte{0x00, 0x80}},
 	{257, []byte{0x01, 0x01}},                  // FF + 2
 	{65537, []byte{0x01, 0x00, 0x01}},          // FFFF + 2
 	{16777217, []byte{0x01, 0x00, 0x00, 0x01}}, // FFFFFF + 2
@@ -71,7 +73,8 @@ var testsMarshalInt32 = []struct {
 	goodBytes []byte
 }{
 	{0, []byte{0x00}},
-	{2, []byte{0x02}},                          // 2
+	{2, []byte{0x02}}, // 2
+	{128, []byte{0x00, 0x80}},
 	{257, []byte{0x01, 0x01}},                  // FF + 2
 	{65537, []byte{0x01, 0x00, 0x01}},          // FFFF + 2
 	{16777217, []byte{0x01, 0x00, 0x00, 0x01}}, // FFFFFF + 2
@@ -111,4 +114,27 @@ func TestParseUint64(t *testing.T) {
 			t.Errorf("parseUint64(%v) = %d, %v want %d, <nil>", test.data, ret, err, test.n)
 		}
 	}
+}
+
+func checkByteEquality2(a, b []byte) bool {
+
+	if a == nil && b == nil {
+		return true
+	}
+
+	if a == nil || b == nil {
+		return false
+	}
+
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+
+	return true
 }
